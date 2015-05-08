@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="es-AR">
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<script type="text/javascript" src="http://codeorigin.jquery.com/jquery-1.10.2.min.js"></script>
+		<title>Battles of Orien</title>
+		<script type="text/javascript" src="plugins/jwerty/jwerty.js"></script>
+		<script type="text/javascript" src="plugins/buzz/buzz.js"></script>
+		<script type="text/javascript" src="core/ui.js"></script>
+		<script type="text/javascript" src="core/keyboard.js"></script>
+		<script src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
+		
+		<!--<script type="text/javascript" src="homeItems.js"></script>/-->
+		<link rel="stylesheet" type="text/css" href="core/css/general.css">
+		<link rel="stylesheet" type="text/css" href="core/css/font.css">
+     	<link rel="stylesheet" type="text/css" href="core/css/characters.css">
+     
+        
+	</head>
+
+<body>
+	<script>
+		//Musica
+		var mySound = new buzz.sound([
+		    "Sounds/1.ogg",
+		    "Sounds/2.mp3",
+		]);
+		var golpeSound = new buzz.sound([
+		    "Sounds/golpe.wav",
+		    "Sounds/golpe.mp3",
+		]);
+		var pocionSound = new buzz.sound([
+		    "Sounds/beber.wav",
+		    "Sounds/beber.mp3",
+		]);
+		//Config
+		buzz.defaults.preload = 'auto';
+		buzz.defaults.autoplay = true;
+		buzz.defaults.loop = true;
+		buzz.defaults.placeholder = '--';
+		buzz.defaults.duration = 5000; 
+		buzz.defaults.formats = ['ogg', 'mp3', 'aac', 'wav'];
+
+		
+
+		$(document).ready(function() {
+			var sprite = "";
+
+			mySound.loop = true;
+			mySound.play();
+
+			
+			$("#btnConectar").click(function() {
+				if($("#nombre").val() != "") { //SI EL CAMBO NO ESTA VACIO, INICIAR NORMALMENTE -BATMAN
+					if(sprite != "") {
+						ui.clickConectar();
+						fondo(2);
+						$(".errorLog").hide();
+						$(".loginContainer").hide();
+					}
+					else {
+						$(".loginContainer").effect("shake");
+						$(".errorLog").slideDown("fast");
+						$(".errorLog").html("Necesitas elegir un personaje");
+					}
+
+				}
+				else { //SI NO, MOSTRAR MENSAJE DE ERROR
+					$(".loginContainer").effect("shake");
+					$(".errorLog").slideDown("fast");
+					$(".errorLog").html("Necesitas ingresar un nombre de usuario");
+				}
+
+			});
+			//ELIGE EL SPRITE Y GUARDA EN UNA VARIABLE CUAL ES
+			$(".characterPicker").click(function() {
+				$(".characterPicker").each(function(){
+					$(this).removeClass("charPicked");
+				});
+				$(this).toggleClass("charPicked");
+				sprite = $(this).attr("data-sprite");
+				//console.log(sprite);
+				$("#sprite").val(sprite);
+			});
+
+			$("#sound").click(function() {
+				mySound.togglePlay();
+
+				$(this).toggleClass("mute");
+					if($(this).hasClass("mute")) {
+						
+						//$("#sound").html("Sonido No");
+					}
+					else {
+						//$("#sound").html("Sonido Si");
+					}
+			});
+			// BOTONES DE COMPRA
+			$("#m0").click(function(){
+                ui.webSocket.send(JSON.stringify({ tipo:"comprar", nombre: ui.nombre, obj:0 }));
+            });
+            $("#m1").click(function(){
+                ui.webSocket.send(JSON.stringify({ tipo:"comprar", nombre: ui.nombre, obj:1 }));
+            });
+            $("#m2").click(function(){
+                ui.webSocket.send(JSON.stringify({ tipo:"comprar", nombre: ui.nombre, obj:2 }));
+            });
+            $("#m3").click(function(){
+                ui.webSocket.send(JSON.stringify({ tipo:"comprar", nombre: ui.nombre, obj:3 }));
+            });
+            $("#m4").click(function(){
+                ui.webSocket.send(JSON.stringify({ tipo:"comprar", nombre: ui.nombre, obj:4 }));
+            });
+			// END BOTONES DE COMPRA
+			function fondo(num){
+				$('body').fadeTo('slow', 0.3, function()
+				{
+				    $(this).css('background', 'url(core/css/Graficos/000'+num+'.png)');
+				}).fadeTo('slow', 1);
+			}
+
+			$("#consolam").prop('disabled', true);
+
+		});
+
+		function reloadPage(){
+			location.reload()
+		}
+		// DRAG AND DROP EXTREMADAMENTE BASICO.
+		function allowDrop(ev){
+			ev.preventDefault();
+		}
+
+		function drag(ev){
+			ev.dataTransfer.setData("Text",ev.target.id);
+		}
+
+		function drop(ev){
+			ev.preventDefault();
+			var data=ev.dataTransfer.getData("Text");
+			//
+			ev.target.appendChild(document.getElementById(data));
+		}
+
+		</script>
+		<div class="errorLog"></div>
+		<div>
+		<div class="loginContainer">
+			<a href="#" class="logo"></a>
+			<div class="separadorLogo"></div>
+			<div style="display:none" id="name">a</div>
+			<input type="text" value="127.0.0.1" id="serverAddress">
+			<input type="text" value="" id="sprite" style="display:none" hidden>
+			<input type="text" value="8080" id="serverPort" hidden><br/><br/>
+			<label>Nombre de Usuario</label>
+			<input type="text" placeholder="Nombre de Usuario" id="nombre">
+			<label>Escoge tu personaje</label>
+			<div class="characterPicker" data-sprite="rogue"><img src="core/css/Graficos/rogue-ch.png" /></div>
+			<div class="characterPicker rightChP" data-sprite="warrior"><img src="core/css/Graficos/warrior-ch.png" /></div>
+			<input type="button" id="btnConectar" value="¡Comenzar!">
+			<!--<input type="text" value="Player" id="nombre"><span id="errorLabel">  </span><br/><br/>-->
+			</div>
+			<div id="sound" class="sound"></div>
+			
+			<div id="contenedor" style="width:100%; height:100%; ">
+			
+			
+			</div>
+
+		</div>
+        <div id="barraGeneral">
+        <div id="consola">Bienvenido al mundo!<br></div>
+		<div id="entrada"><input type="input" id="consolam" ></div>
+				<div class="hp"><section><span class="vidaVisible"><a href="#">100%</a></span></section></div>
+				<div class="inventarioRapido">
+					<div class="quickKeyContainer"><span class="quickKey">R</span><span class="quickKey">T</span><span class="quickKey">Y</span><span class="quickKey">U</span><span class="quickKey">I</span></div>
+					<div class="lineaUno">
+						<!--/////QUICK KEYS//// -BATMAN-->
+						<div class="IRBlock" id="f0"></div>
+						<div class="IRBlock" id="f1"></div>
+						<div class="IRBlock" id="f2"></div>
+						<div class="IRBlock" id="f3"></div>
+						<div class="IRBlock" id="f4"></div>
+					</div>
+					<div class="lineaDos">
+						<div class="IRBlock" id="m0"></div>
+						<div class="IRBlock" id="m1"></div>
+						<div class="IRBlock" id="m2"></div>
+						<div class="IRBlock" id="m3"></div>
+						<div class="IRBlock" id="m4"></div>
+					</div>
+					<span class="gold" id="plata">25</span>
+					<div class="cantidad">
+						<div class="cant-i" id="c0">0</div>
+						<div class="cant-i" id="c1">0</div>
+						<div class="cant-i" id="c2">0</div>
+						<div class="cant-i" id="c3">0</div>
+						<div class="cant-i" id="c4">0</div>
+					</div>
+				</div>
+			</div>
+			</div>
+	</body>
+</html>
